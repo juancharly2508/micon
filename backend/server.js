@@ -18,6 +18,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/health', async (_req, res) => {
+  try {
+    const pool = require('./db');
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok' });
+  } catch (error) {
+    res.status(503).json({ status: 'unavailable', error: 'Database connection failed' });
+  }
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/announcements', announcementsRoutes);
 app.use('/api/debts', debtsRoutes);

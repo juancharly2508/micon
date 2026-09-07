@@ -1,48 +1,11 @@
-import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
-
-  const handleLogin = async () => {
-    try {
-      const res = await api.post('/auth/login', { email, password });
-      if (res.data.user.role !== 'admin') {
-        Alert.alert('Error', 'No tienes permisos de administrador');
-        return;
-      }
-      await login(res.data.token, res.data.user);
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error de conexión');
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-        autoCapitalize="none"
-      />
-      <TextInput
-        placeholder="Contraseña"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-      <Button title="Ingresar" onPress={handleLogin} />
-    </View>
-  );
+  const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const { login } = useContext(AuthContext);
+  const handleLogin = async () => { try { const res = await api.post('/auth/login', { email, password }); if (res.data.user.role !== 'admin') return Alert.alert('Acceso restringido', 'Esta aplicación es exclusiva para administradores.'); await login(res.data.token, res.data.user); } catch (error) { Alert.alert('No se pudo iniciar sesión', error.response?.data?.error || 'Revisa tu conexión.'); } };
+  return <View style={styles.screen}><View style={styles.hero}><Text style={styles.brand}>▣  MiCon</Text><Text style={styles.heroText}>Gestión simple para comunidades extraordinarias.</Text></View><View style={styles.sheet}><Text style={styles.title}>Panel de Administración</Text><Text style={styles.subtitle}>Controla, gestiona y monitorea tu condominio</Text><Text style={styles.label}>Correo de administrador</Text><TextInput autoCapitalize="none" keyboardType="email-address" onChangeText={setEmail} placeholder="admin@micon.com" placeholderTextColor="#9BA4B5" style={styles.input} value={email} /><Text style={styles.label}>Contraseña</Text><TextInput onChangeText={setPassword} placeholder="••••••••" placeholderTextColor="#9BA4B5" secureTextEntry style={styles.input} value={password} /><Pressable onPress={handleLogin} style={styles.button}><Text style={styles.buttonText}>Entrar al Panel</Text></Pressable><Text style={styles.support}>Soporte técnico: contacto@micon.com</Text></View></View>;
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10, borderRadius: 5 },
-});
+const styles = StyleSheet.create({ screen: { backgroundColor: '#F6F7FB', flex: 1 }, hero: { backgroundColor: '#26213F', minHeight: 220, padding: 26, paddingTop: 70 }, brand: { color: '#FFF', fontSize: 22, fontWeight: '800' }, heroText: { color: '#DFDAFF', fontSize: 14, marginTop: 14, maxWidth: 260 }, sheet: { flex: 1, padding: 22 }, title: { color: '#161B2B', fontSize: 22, fontWeight: '800', marginTop: 6 }, subtitle: { color: '#788196', fontSize: 13, marginTop: 7 }, label: { color: '#3E4556', fontSize: 12, fontWeight: '700', marginTop: 25 }, input: { backgroundColor: '#FFF', borderColor: '#E4E6ED', borderRadius: 10, borderWidth: 1, color: '#161B2B', fontSize: 15, marginTop: 8, padding: 14 }, button: { alignItems: 'center', backgroundColor: '#5140E9', borderRadius: 10, marginTop: 22, padding: 15 }, buttonText: { color: '#FFF', fontSize: 14, fontWeight: '800' }, support: { color: '#788196', fontSize: 11, marginTop: 'auto', textAlign: 'center' } });

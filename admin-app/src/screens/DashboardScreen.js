@@ -1,33 +1,10 @@
 import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 
+const actions = [['Users', '♙', 'Usuarios', 'Gestionar residentes', '#EEEAFE'], ['Properties', '▤', 'Unidades', 'Propiedades', '#E6F5FF'], ['Debts', '▣', 'Por cobrar', 'Consultar deudas', '#FFECEC'], ['Reservations', '▦', 'Reservas', 'Áreas comunes', '#E3F9ED'], ['Reports', '⚑', 'Reportes', 'Atender incidencias', '#FFF3D9'], ['Announcements', '✦', 'Nuevo aviso', 'Crear para todos', '#EEEAFE']];
 export default function DashboardScreen({ navigation }) {
-  const { user, logout } = useContext(AuthContext);
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Panel de Administración</Text>
-      <Text>Bienvenido, {user.full_name}</Text>
-      <View style={styles.menu}>
-        <Button title="Usuarios" onPress={() => navigation.navigate('Users')} />
-        <Button title="Propiedades" onPress={() => navigation.navigate('Properties')} />
-        <Button title="Áreas" onPress={() => navigation.navigate('Areas')} />
-        <Button title="Horarios" onPress={() => navigation.navigate('Schedules')} />
-        <Button title="Deudas" onPress={() => navigation.navigate('Debts')} />
-        <Button title="Reservaciones" onPress={() => navigation.navigate('Reservations')} />
-        <Button title="Avisos" onPress={() => navigation.navigate('Announcements')} />
-        <Button title="Códigos QR" onPress={() => navigation.navigate('QRCodes')} />
-        <Button title="Reportes" onPress={() => navigation.navigate('Reports')} />
-        <Button title="Pagos" onPress={() => navigation.navigate('Payments')} />
-      </View>
-      <Button title="Cerrar sesión" onPress={logout} />
-    </View>
-  );
+  const { user, logout } = useContext(AuthContext); const name = user?.full_name?.split(' ')[0] || 'Administrador';
+  return <View style={styles.screen}><ScrollView contentContainerStyle={styles.container}><View style={styles.header}><View><Text style={styles.greeting}>Hola, {name} 👋</Text><Text style={styles.role}>Administrador · MiCon</Text></View><Pressable onPress={logout} style={styles.bell}><Text>♧</Text></Pressable></View><Pressable onPress={() => navigation.navigate('Debts')} style={styles.hero}><Text style={styles.heroTitle}>Finanzas del Condominio</Text><Text style={styles.heroText}>Consulta los cargos que requieren atención.</Text><Text style={styles.arrow}>›</Text></Pressable><Text style={styles.section}>Métricas del Complejo</Text><View style={styles.grid}>{actions.map(([route, icon, title, subtitle, color]) => <Pressable key={route} onPress={() => navigation.navigate(route)} style={[styles.action, { backgroundColor: color }]}><Text style={styles.icon}>{icon}</Text><Text style={styles.actionTitle}>{title}</Text><Text style={styles.actionSub}>{subtitle}</Text></Pressable>)}</View></ScrollView></View>;
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
-  menu: { gap: 10, marginVertical: 20 },
-});
+const styles = StyleSheet.create({ screen: { backgroundColor: '#F6F7FB', flex: 1 }, container: { padding: 20 }, header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginTop: 22 }, greeting: { color: '#161B2B', fontSize: 20, fontWeight: '800' }, role: { color: '#788196', fontSize: 12, marginTop: 3 }, bell: { alignItems: 'center', backgroundColor: '#FFF', borderRadius: 18, height: 40, justifyContent: 'center', width: 40 }, hero: { backgroundColor: '#5140E9', borderRadius: 16, marginTop: 20, minHeight: 94, padding: 17 }, heroTitle: { color: '#FFF', fontSize: 15, fontWeight: '800' }, heroText: { color: '#E8E5FF', fontSize: 12, marginTop: 6 }, arrow: { color: '#FFF', fontSize: 30, position: 'absolute', right: 16, top: 29 }, section: { color: '#161B2B', fontSize: 16, fontWeight: '800', marginBottom: 12, marginTop: 22 }, grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 }, action: { borderRadius: 15, minHeight: 118, padding: 14, width: '48.5%' }, icon: { color: '#5140E9', fontSize: 21 }, actionTitle: { color: '#161B2B', fontSize: 13, fontWeight: '800', marginTop: 15 }, actionSub: { color: '#788196', fontSize: 10, marginTop: 4 } });

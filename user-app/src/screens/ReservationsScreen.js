@@ -1,47 +1,54 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import api from '../api';
 
-export default function QRGenerateScreen() {
-  const [visitorName, setVisitorName] = useState('');
-  const [validTo, setValidTo] = useState('2025-12-31 23:59:59');
-  const [maxEntries, setMaxEntries] = useState('1');
-  const [qr, setQr] = useState(null);
+export default function ReservationsScreen() {
+  const [areaId, setAreaId] = useState('');
+  const [startDateTime, setStartDateTime] = useState('');
+  const [endDateTime, setEndDateTime] = useState('');
 
-  const generateQR = async () => {
+  const createReservation = async () => {
+    const area_id = Number(areaId);
+    const start = new Date(startDateTime);
+    const end = new Date(endDateTime);
+
+    if (!Number.isInteger(area_id) || area_id <= 0 || Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+      Alert.alert('Datos inválidos', 'Indica el área y fechas válidas en formato YYYY-MM-DDTHH:mm.');
+      return;
+    }
+    if (end <= start) {
+      Alert.alert('Horario inválido', 'La fecha final debe ser posterior a la fecha inicial.');
+      return;
+    }
+
     try {
-      const res = await api.post('/qr/generate', {
-        visitor_name: visitorName,
-        valid_to: validTo,
-        max_entries: parseInt(maxEntries),
+      const response = await api.post('/reservations', {
+        area_id,
+        start_datetime: start.toISOString(),
+        end_datetime: end.toISOString(),
       });
-      setQr(res.data.qr);
-      Alert.alert('QR generado', res.data.message);
+      Alert.alert('Reservación creada', `Costo total: $${response.data.total_cost}`);
+      setAreaId('');
+      setStartDateTime('');
+      setEndDateTime('');
     } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error');
+      Alert.alert('No se pudo reservar', error.response?.data?.error || 'Revisa tu conexión e inténtalo de nuevo.');
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Generar QR para visitante</Text>
-      <TextInput placeholder="Nombre del visitante" value={visitorName} onChangeText={setVisitorName} style={styles.input} />
-      <TextInput placeholder="Fecha válida (YYYY-MM-DD HH:mm:ss)" value={validTo} onChangeText={setValidTo} style={styles.input} />
-      <TextInput placeholder="Entradas máximas" value={maxEntries} onChangeText={setMaxEntries} keyboardType="numeric" style={styles.input} />
-      <Button title="Generar QR" onPress={generateQR} />
-      {qr && (
-        <View style={styles.qrContainer}>
-          <Text>Código: {qr.code}</Text>
-          <Text>Costo: ${qr.cost}</Text>
-        </View>
-      )}
+      <Text style={styles.title}>Crear reservación</Text>
+      <TextInput keyboardType="numeric" onChangeText={setAreaId} placeholder="ID del área" style={styles.input} value={areaId} />
+      <TextInput autoCapitalize="none" onChangeText={setStartDateTime} placeholder="Inicio: YYYY-MM-DDTHH:mm" style={styles.input} value={startDateTime} />
+      <TextInput autoCapitalize="none" onChangeText={setEndDateTime} placeholder="Fin: YYYY-MM-DDTHH:mm" style={styles.input} value={endDateTime} />
+      <Button title="Reservar" onPress={createReservation} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
-  input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10, borderRadius: 5 },
-  qrContainer: { marginTop: 20, padding: 10, borderWidth: 1, borderColor: '#ccc', borderRadius: 5 },
+  container: { flex: 1, gap: 12, padding: 20 },
+  input: { borderColor: '#9ca3af', borderRadius: 6, borderWidth: 1, padding: 12 },
+  title: { fontSize: 22, fontWeight: 'bold' },
 });

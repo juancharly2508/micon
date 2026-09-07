@@ -1,32 +1,11 @@
-import React, { useState, useContext } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import api from '../api';
 import { AuthContext } from '../context/AuthContext';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const { login } = useContext(AuthContext);
-
-  const handleLogin = async () => {
-    try {
-      const res = await api.post('/auth/login', { email, password });
-      await login(res.data.token, res.data.user);
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error de conexión');
-    }
-  };
-
-  return (
-    <View style={styles.container}>
-      <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} autoCapitalize="none" />
-      <TextInput placeholder="Contraseña" value={password} onChangeText={setPassword} secureTextEntry style={styles.input} />
-      <Button title="Ingresar" onPress={handleLogin} />
-    </View>
-  );
+  const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const { login } = useContext(AuthContext);
+  const handleLogin = async () => { try { const res = await api.post('/auth/login', { email, password }); if (res.data.user.role !== 'residente') return Alert.alert('Acceso restringido', 'Usa la aplicación correspondiente a tu perfil.'); await login(res.data.token, res.data.user); } catch (error) { Alert.alert('No se pudo iniciar sesión', error.response?.data?.error || 'Revisa tu conexión.'); } };
+  return <View style={styles.screen}><View style={styles.hero}><Text style={styles.logo}>MiCon</Text><Text style={styles.tagline}>Tu comunidad, más cerca.</Text></View><View style={styles.card}><Text style={styles.title}>Bienvenido</Text><Text style={styles.subtitle}>Inicia sesión para ver tu residencia</Text><Text style={styles.label}>Correo electrónico</Text><TextInput autoCapitalize="none" keyboardType="email-address" onChangeText={setEmail} placeholder="tu@correo.com" placeholderTextColor="#9BA4B5" style={styles.input} value={email} /><Text style={styles.label}>Contraseña</Text><TextInput onChangeText={setPassword} placeholder="••••••••" placeholderTextColor="#9BA4B5" secureTextEntry style={styles.input} value={password} /><Pressable onPress={handleLogin} style={styles.button}><Text style={styles.buttonText}>Entrar a MiCon</Text></Pressable></View></View>;
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', padding: 20 },
-  input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10, borderRadius: 5 },
-});
+const styles = StyleSheet.create({ screen: { backgroundColor: '#F6F7FB', flex: 1 }, hero: { backgroundColor: '#5140E9', minHeight: 285, padding: 28, paddingTop: 94 }, logo: { color: '#FFF', fontSize: 33, fontWeight: '800' }, tagline: { color: '#E8E5FF', fontSize: 16, marginTop: 8 }, card: { backgroundColor: '#FFF', borderRadius: 24, flex: 1, marginTop: -28, padding: 24 }, title: { color: '#161B2B', fontSize: 24, fontWeight: '800' }, subtitle: { color: '#788196', fontSize: 13, marginTop: 6 }, label: { color: '#3E4556', fontSize: 12, fontWeight: '700', marginTop: 24 }, input: { borderColor: '#E4E6ED', borderRadius: 10, borderWidth: 1, color: '#161B2B', marginTop: 8, padding: 14 }, button: { alignItems: 'center', backgroundColor: '#5140E9', borderRadius: 10, marginTop: 24, padding: 15 }, buttonText: { color: '#FFF', fontWeight: '800' } });

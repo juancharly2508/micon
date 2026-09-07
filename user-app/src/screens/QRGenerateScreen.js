@@ -4,7 +4,7 @@ import api from '../api';
 
 export default function QRGenerateScreen() {
   const [visitorName, setVisitorName] = useState('');
-  const [validTo, setValidTo] = useState('2025-12-31T23:59:59');
+  const [validTo, setValidTo] = useState(() => new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16));
   const [maxEntries, setMaxEntries] = useState('1');
   const [qr, setQr] = useState(null);
 
@@ -26,7 +26,7 @@ export default function QRGenerateScreen() {
     <View style={{ padding: 20 }}>
       <Text>Generar QR para visitante</Text>
       <TextInput placeholder="Nombre del visitante" value={visitorName} onChangeText={setVisitorName} />
-      <TextInput placeholder="Fecha válida (YYYY-MM-DD HH:mm)" value={validTo} onChangeText={setValidTo} />
+      <TextInput placeholder="Fecha válida (YYYY-MM-DDTHH:mm)" value={validTo} onChangeText={setValidTo} />
       <TextInput placeholder="Entradas máximas" value={maxEntries} onChangeText={setMaxEntries} keyboardType="numeric" />
       <Button title="Generar QR" onPress={generateQR} />
       {qr && (
