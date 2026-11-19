@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function UsersScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [users, setUsers] = useState([]);
   const [form, setForm] = useState({ full_name: '', email: '', password: '', phone: '', role: 'residente', property_id: '' });
 
@@ -61,7 +63,7 @@ export default function UsersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   subHeader: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },

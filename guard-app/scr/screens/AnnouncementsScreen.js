@@ -1,17 +1,11 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function AnnouncementsScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [announcements, setAnnouncements] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({
-    title: '',
-    body: '',
-    expires_at: '',
-    active: 1,
-  });
-
   const load = async () => {
     try {
       const res = await api.get('/announcements');
@@ -23,91 +17,37 @@ export default function AnnouncementsScreen() {
 
   useEffect(() => { load(); }, []);
 
-  const handleSubmit = async () => {
-    try {
-      const payload = {
-        ...form,
-        active: Number(form.active),
-        expires_at: form.expires_at || null,
-      };
-      if (editingId) {
-        await api.put(`/announcements/${editingId}`, payload);
-        Alert.alert('Aviso actualizado');
-      } else {
-        await api.post('/announcements', payload);
-        Alert.alert('Aviso creado');
-      }
-      resetForm();
-      load();
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error');
-    }
-  };
-
-  const handleEdit = (item) => {
-    setEditingId(item.id);
-    setForm({
-      title: item.title,
-      body: item.body,
-      expires_at: item.expires_at ? item.expires_at.split('T')[0] : '',
-      active: item.active,
-    });
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/announcements/${id}`);
-      Alert.alert('Aviso eliminado');
-      load();
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error');
-    }
-  };
-
-  const resetForm = () => {
-    setEditingId(null);
-    setForm({ title: '', body: '', expires_at: '', active: 1 });
-  };
-
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Avisos generales</Text>
+      <Text style={styles.header}>Avisos</Text>
+      <Text style={styles.subtitle}>Información de la administración del condominio.</Text>
       <FlatList
         data={announcements}
+        contentContainerStyle={styles.list}
+        ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyTitle}>Aún no hay avisos</Text><Text style={styles.muted}>Cuando la administración publique uno, aparecerá aquí.</Text></View>}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
+            <Text style={styles.date}>{item.created_at ? new Date(item.created_at).toLocaleDateString() : 'Aviso de administración'}</Text>
             <Text style={styles.title}>{item.title}</Text>
-            <Text>{item.body}</Text>
-            <Text>Expira: {item.expires_at ? item.expires_at.split('T')[0] : 'N/A'}</Text>
-            <Text>Activo: {item.active ? 'Sí' : 'No'}</Text>
-            <View style={styles.actions}>
-              <Button title="Editar" onPress={() => handleEdit(item)} />
-              <Button title="Eliminar" color="red" onPress={() => handleDelete(item.id)} />
-            </View>
+            <Text style={styles.body}>{item.body}</Text>
           </View>
         )}
       />
-      <Text style={styles.subHeader}>{editingId ? 'Editar aviso' : 'Crear aviso'}</Text>
-      <TextInput placeholder="Título" value={form.title} onChangeText={(v) => setForm({...form, title: v})} style={styles.input} />
-      <TextInput placeholder="Contenido" value={form.body} onChangeText={(v) => setForm({...form, body: v})} multiline style={styles.input} />
-      <TextInput placeholder="Fecha expiración (YYYY-MM-DD)" value={form.expires_at} onChangeText={(v) => setForm({...form, expires_at: v})} style={styles.input} />
-      <TextInput placeholder="Activo (1/0)" value={String(form.active)} onChangeText={(v) => setForm({...form, active: v})} keyboardType="numeric" style={styles.input} />
-      <View style={styles.formButtons}>
-        <Button title={editingId ? 'Actualizar' : 'Crear'} onPress={handleSubmit} />
-        {editingId && <Button title="Cancelar" onPress={resetForm} />}
-      </View>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
-  subHeader: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
-  card: { borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 5, borderRadius: 5 },
-  title: { fontWeight: 'bold' },
-  actions: { flexDirection: 'row', gap: 10, marginTop: 5 },
-  input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 8, borderRadius: 5 },
-  formButtons: { flexDirection: 'row', gap: 10 },
+const baseStyles = StyleSheet.create({
+  container: { backgroundColor: '#F6F7FB', flex: 1, padding: 20, paddingTop: 48 },
+  header: { color: '#161B2B', fontSize: 23, fontWeight: '800' },
+  subtitle: { color: '#788196', fontSize: 12, marginBottom: 16, marginTop: 5 },
+  list: { paddingBottom: 16 },
+  card: { backgroundColor: '#FFF', borderColor: '#E9EAF0', borderRadius: 16, borderWidth: 1, marginBottom: 12, padding: 16 },
+  date: { color: '#5140E9', fontSize: 10, fontWeight: '700', marginBottom: 8 },
+  title: { color: '#161B2B', fontSize: 16, fontWeight: '800', marginBottom: 7 },
+  body: { color: '#596074', fontSize: 13, lineHeight: 20 },
+  empty: { alignItems: 'center', backgroundColor: '#FFF', borderRadius: 16, marginTop: 30, padding: 22 },
+  emptyTitle: { color: '#161B2B', fontSize: 15, fontWeight: '700', marginBottom: 5 },
+  muted: { color: '#788196', fontSize: 12, textAlign: 'center' },
 });

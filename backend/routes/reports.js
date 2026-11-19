@@ -11,8 +11,8 @@ router.post('/', authenticate, async (req, res) => {
     const property_id = req.user.property_id;
 
     const [result] = await pool.query(
-      'INSERT INTO reports (user_id, property_id, type, title, description, area) VALUES (?, ?, ?, ?, ?, ?)',
-      [user_id, property_id, type, title, description, area]
+      'INSERT INTO reports (condo_id, user_id, property_id, type, title, description, area) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [req.user.condo_id, user_id, property_id, type, title, description, area]
     );
     res.status(201).json({ id: result.insertId, message: 'Reporte enviado' });
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -22,13 +22,13 @@ router.post('/', authenticate, async (req, res) => {
 router.get('/', authenticate, async (req, res) => {
   try {
     if (req.user.role === 'admin') {
-      const [rows] = await pool.query('SELECT * FROM reports ORDER BY created_at DESC');
+      const [rows] = await pool.query('SELECT * FROM reports WHERE condo_id = ? ORDER BY created_at DESC', [req.user.condo_id]);
       return res.json(rows);
     } else if (req.user.role === 'guardia') {
-      const [rows] = await pool.query('SELECT * FROM reports WHERE type = "visitante" OR user_id = ? ORDER BY created_at DESC', [req.user.id]);
+      const [rows] = await pool.query('SELECT * FROM reports WHERE condo_id = ? AND (type = "visitante" OR user_id = ?) ORDER BY created_at DESC', [req.user.condo_id, req.user.id]);
       return res.json(rows);
     } else {
-      const [rows] = await pool.query('SELECT * FROM reports WHERE user_id = ? ORDER BY created_at DESC', [req.user.id]);
+      const [rows] = await pool.query('SELECT * FROM reports WHERE condo_id = ? AND user_id = ? ORDER BY created_at DESC', [req.user.condo_id, req.user.id]);
       return res.json(rows);
     }
   } catch (error) { res.status(500).json({ error: error.message }); }
@@ -38,7 +38,7 @@ router.get('/', authenticate, async (req, res) => {
 router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
   try {
     const { status } = req.body;
-    await pool.query('UPDATE reports SET status = ? WHERE id = ?', [status, req.params.id]);
+    await pool.query('UPDATE reports SET status = ? WHERE condo_id = ? AND id = ?', [status, req.user.condo_id, req.params.id]);
     res.json({ message: 'Reporte actualizado' });
   } catch (error) { res.status(400).json({ error: error.message }); }
 });
@@ -46,7 +46,7 @@ router.put('/:id', authenticate, authorize('admin'), async (req, res) => {
 // Eliminar reporte (admin)
 router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
   try {
-    await pool.query('DELETE FROM reports WHERE id = ?', [req.params.id]);
+    await pool.query('DELETE FROM reports WHERE condo_id = ? AND id = ?', [req.user.condo_id, req.params.id]);
     res.json({ message: 'Reporte eliminado' });
   } catch (error) { res.status(500).json({ error: error.message }); }
 });

@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, Button, Alert, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function ReportsScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [reports, setReports] = useState([]);
 
   const load = async () => {
@@ -16,44 +18,21 @@ export default function ReportsScreen() {
 
   useEffect(() => { load(); }, []);
 
-  const handleStatus = async (id, status) => {
-    try {
-      await api.put(`/reports/${id}`, { status });
-      Alert.alert('Estado actualizado');
-      load();
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error');
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await api.delete(`/reports/${id}`);
-      Alert.alert('Reporte eliminado');
-      load();
-    } catch (error) {
-      Alert.alert('Error', error.response?.data?.error || 'Error');
-    }
-  };
-
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Reportes</Text>
+      <Text style={styles.subtitle}>Incidentes registrados en el condominio.</Text>
       <FlatList
         data={reports}
+        contentContainerStyle={styles.list}
+        ListEmptyComponent={<View style={styles.empty}><Text style={styles.emptyTitle}>Sin reportes pendientes</Text><Text style={styles.muted}>Los reportes de visitantes aparecerán aquí.</Text></View>}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Text>Tipo: {item.type}</Text>
-            <Text>Título: {item.title}</Text>
-            <Text>{item.description}</Text>
-            <Text>Área: {item.area || 'N/A'}</Text>
-            <Text>Estado: {item.status}</Text>
-            <View style={styles.actions}>
-              <Button title="Marcar en revisión" onPress={() => handleStatus(item.id, 'en_revision')} />
-              <Button title="Marcar resuelto" onPress={() => handleStatus(item.id, 'resuelto')} />
-              <Button title="Eliminar" color="red" onPress={() => handleDelete(item.id)} />
-            </View>
+            <View style={styles.top}><Text style={styles.type}>{item.type === 'visitante' ? 'Visitante' : 'Incidente'}</Text><Text style={styles.status}>{item.status || 'Nuevo'}</Text></View>
+            <Text style={styles.title}>{item.title}</Text>
+            <Text style={styles.body}>{item.description}</Text>
+            {item.area ? <Text style={styles.area}>Zona: {item.area}</Text> : null}
           </View>
         )}
       />
@@ -61,9 +40,19 @@ export default function ReportsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
-  card: { borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 5, borderRadius: 5 },
-  actions: { flexDirection: 'row', gap: 5, marginTop: 5 },
+const baseStyles = StyleSheet.create({
+  container: { backgroundColor: '#F6F7FB', flex: 1, padding: 20, paddingTop: 48 },
+  header: { color: '#161B2B', fontSize: 23, fontWeight: '800' },
+  subtitle: { color: '#788196', fontSize: 12, marginBottom: 16, marginTop: 5 },
+  list: { paddingBottom: 16 },
+  card: { backgroundColor: '#FFF', borderColor: '#E9EAF0', borderRadius: 16, borderWidth: 1, marginBottom: 12, padding: 15 },
+  top: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 },
+  type: { color: '#5140E9', fontSize: 10, fontWeight: '800' },
+  status: { backgroundColor: '#EEEAFE', borderRadius: 10, color: '#5140E9', fontSize: 10, overflow: 'hidden', paddingHorizontal: 9, paddingVertical: 5 },
+  title: { color: '#161B2B', fontSize: 15, fontWeight: '800', marginBottom: 5 },
+  body: { color: '#596074', fontSize: 12, lineHeight: 18 },
+  area: { color: '#788196', fontSize: 11, marginTop: 10 },
+  empty: { alignItems: 'center', backgroundColor: '#FFF', borderRadius: 16, marginTop: 30, padding: 22 },
+  emptyTitle: { color: '#161B2B', fontSize: 15, fontWeight: '700', marginBottom: 5 },
+  muted: { color: '#788196', fontSize: 12, textAlign: 'center' },
 });

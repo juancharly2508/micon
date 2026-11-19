@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useContext } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 
 export default function DashboardScreen({ navigation }) {
+  const styles = useThemedStyles(baseStyles);
   const { user, logout } = useContext(AuthContext);
 
   return (
@@ -26,7 +28,7 @@ export default function DashboardScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: { fontSize: 24, fontWeight: 'bold', marginBottom: 10 },
   menu: { gap: 10, marginVertical: 20 },

@@ -13,10 +13,11 @@ const propertiesRoutes = require('./routes/properties');
 const usersRoutes = require('./routes/users');
 const paymentsRoutes = require('./routes/payments');
 const schedulesRoutes = require('./routes/schedules');
+const condominiumsRoutes = require('./routes/condominiums');
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '8mb' }));
 
 app.get('/health', async (_req, res) => {
   try {
@@ -39,6 +40,7 @@ app.use('/api/properties', propertiesRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/schedules', schedulesRoutes);
+app.use('/api/condominiums', condominiumsRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API MiCon en puerto ${PORT}`));

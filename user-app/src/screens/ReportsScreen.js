@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function ReportsScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [area, setArea] = useState('');
@@ -35,7 +37,7 @@ export default function ReportsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
   input: { borderWidth: 1, borderColor: '#ccc', marginBottom: 10, padding: 10, borderRadius: 5 },

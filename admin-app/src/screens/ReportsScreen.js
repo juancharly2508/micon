@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Button, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function ReportsScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [reports, setReports] = useState([]);
 
   const load = async () => {
@@ -61,7 +63,7 @@ export default function ReportsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   card: { borderWidth: 1, borderColor: '#ccc', padding: 10, marginBottom: 5, borderRadius: 5 },

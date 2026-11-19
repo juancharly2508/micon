@@ -1,3 +1,4 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect, useContext } from 'react';
 import {
   View,
@@ -13,6 +14,7 @@ import api from '../api';
 import Constants from 'expo-constants';
 
 export default function HomeScreen({ navigation }) {
+  const styles = useThemedStyles(baseStyles);
   const { user, logout } = useContext(AuthContext);
   const [stats, setStats] = useState({
     users: 0,
@@ -206,7 +208,7 @@ export default function HomeScreen({ navigation }) {
 }
 
 // Estilos (sin cambios, igual que antes)
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   screen: { backgroundColor: '#F6F7FB', flex: 1 },
   container: { padding: 20, paddingBottom: 40 },
   header: {

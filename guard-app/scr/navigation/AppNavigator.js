@@ -3,7 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
-import QRVerifyScreen from '../screens/QRVerifyScreen';
+import GuardTabsScreen from '../screens/GuardTabsScreen';
+import ServiceUnavailableScreen from '../screens/ServiceUnavailableScreen';
 
 const Stack = createStackNavigator();
 
@@ -17,9 +18,11 @@ export default function AppNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!user ? (
           <Stack.Screen name="Login" component={LoginScreen} />
+        ) : !user.has_guards ? (
+          <Stack.Screen name="ServiceUnavailable" component={ServiceUnavailableScreen} />
         ) : (
           <>
-            <Stack.Screen name="QRVerify" component={QRVerifyScreen} />
+            <Stack.Screen name="GuardTabs" component={GuardTabsScreen} />
           </>
         )}
       </Stack.Navigator>

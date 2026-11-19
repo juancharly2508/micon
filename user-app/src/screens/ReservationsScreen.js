@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState } from 'react';
 import { Alert, Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import api from '../api';
 
 export default function ReservationsScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [areaId, setAreaId] = useState('');
   const [startDateTime, setStartDateTime] = useState('');
   const [endDateTime, setEndDateTime] = useState('');
@@ -47,7 +49,7 @@ export default function ReservationsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, gap: 12, padding: 20 },
   input: { borderColor: '#9ca3af', borderRadius: 6, borderWidth: 1, padding: 12 },
   title: { fontSize: 22, fontWeight: 'bold' },

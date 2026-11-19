@@ -3,6 +3,10 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthContext } from '../context/AuthContext';
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
+import SetupScreen from '../screens/SetupScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import RulesSettingsScreen from '../screens/RulesSettingsScreen';
 import DashboardScreen from '../screens/DashboardScreen';
 import UsersScreen from '../screens/UsersScreen';
 import PropertiesScreen from '../screens/PropertiesScreen';
@@ -26,17 +30,24 @@ export default function AppNavigator() {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!user ? (
-          <Stack.Screen name="Login" component={LoginScreen} />
+          <>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+          </>
+        ) : !user.setup_completed ? (
+          <Stack.Screen name="Setup" component={SetupScreen} />
         ) : (
           <>
             <Stack.Screen name="Dashboard" component={DashboardScreen} />
+            <Stack.Screen name="Settings" component={SettingsScreen} />
+            <Stack.Screen name="RulesSettings" component={RulesSettingsScreen} />
             <Stack.Screen name="Users" component={UsersScreen} />
             <Stack.Screen name="Properties" component={PropertiesScreen} />
             <Stack.Screen name="Areas" component={AreasScreen} />
             <Stack.Screen name="Debts" component={DebtsScreen} />
             <Stack.Screen name="Reservations" component={ReservationsScreen} />
             <Stack.Screen name="Announcements" component={AnnouncementsScreen} />
-            <Stack.Screen name="QRCodes" component={QRCodesScreen} />
+            {user.has_guards && <Stack.Screen name="QRCodes" component={QRCodesScreen} />}
             <Stack.Screen name="Reports" component={ReportsScreen} />
             <Stack.Screen name="Payments" component={PaymentsScreen} />
             <Stack.Screen name="Schedules" component={SchedulesScreen} />

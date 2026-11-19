@@ -1,26 +1,38 @@
 {
   "expo": {
-    "name": "guard-app",
+    "name": "MiCon Guardia",
     "slug": "guard-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "scheme": "guardapp",
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "MiCon necesita la cámara para escanear códigos QR de visitantes.",
+          "recordAudioAndroid": false
+        }
+      ]
+    ],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#197052"
       },
       "package": "com.anonymous.guardapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#197052"
     }
   }
 }

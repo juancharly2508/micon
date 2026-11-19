@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function PaymentsScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [payments, setPayments] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({
@@ -106,7 +108,7 @@ export default function PaymentsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   subHeader: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },

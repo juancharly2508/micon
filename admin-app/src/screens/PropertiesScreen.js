@@ -1,8 +1,10 @@
+import { useThemedStyles } from '../context/ThemeContext';
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import api from '../api';
 
 export default function PropertiesScreen() {
+  const styles = useThemedStyles(baseStyles);
   const [properties, setProperties] = useState([]);
   const [form, setForm] = useState({ unit_number: '', address: '', owner_user_id: '', tenant_user_id: '', is_rental: 0, monthly_maintenance_fee: '0', status: 'activa' });
 
@@ -59,7 +61,7 @@ export default function PropertiesScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const baseStyles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   header: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   subHeader: { fontSize: 18, fontWeight: 'bold', marginTop: 20, marginBottom: 10 },
